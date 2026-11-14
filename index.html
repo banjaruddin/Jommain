@@ -142,13 +142,19 @@ const MT=[
 const BMW=[["🍎","Epal"],["🐱","Kucing"],["🐟","Ikan"],["🌙","Bulan"],["🏠","Rumah"],["🚗","Kereta"],["🍌","Pisang"],["🐘","Gajah"],["⭐","Bintang"],["🐔","Ayam"],["🌳","Pokok"],["🥛","Susu"],["🐄","Lembu"],["🪑","Kerusi"]];
 const LET=[..."ABCDEFGHIJKLMNOPRSTUY"];
 const OPP=[["besar","kecil"],["panas","sejuk"],["tinggi","rendah"],["siang","malam"],["naik","turun"],["panjang","pendek"],["gemuk","kurus"],["atas","bawah"],["laju","perlahan"],["cantik","hodoh"]];
+const PL=(big,items,lang)=>{const it=R(items);if(typeof it==="string")return CS(big,it,lang);if(it.o)return ORD(it.b||big,it.q||"Susun ikut urutan",it.o,lang);return MAT(it.q,it.m,lang)};
+const KAT={N:["Buku","Kucing","Meja","Sekolah","Ibu","Pokok","Kereta"],K:["Makan","Lari","Tidur","Menulis","Membaca","Berjalan","Minum"],S:["Cantik","Besar","Rajin","Tinggi","Manis","Pandai","Kecil"]};
+const IMB=["ber + jalan =|berjalan|menjalan|jalanan","me + baca =|membaca|bebaca|bacaan","makan + an =|makanan|memakan|bermakan","me + tari =|menari|metari|tarian","ber + main =|bermain|memain|mainan","minum + an =|minuman|meminum|berminum","me + lukis =|melukis|belukis|lukisan","ber + lari =|berlari|melari|larian","me + tulis =|menulis|metulis|bertulis","pe + nyanyi =|penyanyi|menyanyi|nyanyian","ke + indah + an =|keindahan|keindahnya|beindahan","per + main + an =|permainan|pemainan|bermainan"];
+const PER=["Berat sama dipikul, ___ sama dijinjing.|ringan|berat|kecil","Ada gula ada ___.|semut|kucing|ikan","Bagai aur dengan ___.|tebing|tanah|batu","Malu bertanya ___.|sesat jalan|pandai|kenyang","Rajin pangkal ___.|pandai|malas|kaya","Air dicencang tidak akan ___.|putus|kering|panas","Bersatu teguh, bercerai ___.|roboh|kenyang|lari","Sedikit demi sedikit lama-lama jadi ___.|bukit|pasir|air","Di mana bumi dipijak, di situ langit ___.|dijunjung|ditutup|dibuka","Tak ada rotan, ___ pun jadi.|akar|batu|kayu","Seperti kacang lupakan ___.|kulit|biji|air","Hendak seribu daya, tak hendak seribu ___.|dalih|jalan|akal"];
+const SIN=["Sinonim \"cantik\"?|indah|hodoh|kecil","Sinonim \"pandai\"?|bijak|bodoh|malas","Sinonim \"rumah\"?|kediaman|sekolah|pasar","Sinonim \"gembira\"?|riang|sedih|marah","Sinonim \"takut\"?|gerun|berani|rajin","Sinonim \"marah\"?|berang|ceria|senyum","Sinonim \"cepat\"?|pantas|lambat|perlahan","Sinonim \"kuat\"?|gagah|lemah|kurus","Sinonim \"bapa\"?|ayah|ibu|abang","Sinonim \"murid\"?|pelajar|guru|doktor"];
 const BM=[
  ()=>R([()=>{const[e,w]=R(BMW);return CH(e,`${w} bermula dengan huruf apa?`,w[0].toUpperCase(),LET)},()=>MAT("Seret gambar ke huruf permulaannya",shuffle(BMW).filter((x,i,a)=>a.findIndex(y=>y[1][0]===x[1][0])===i).slice(0,3).map(([e,w])=>[e,w[0].toUpperCase()]))])(),
  ()=>{const[e,w]=R(BMW),W=w.toUpperCase(),i=ri(0,W.length-1);return CH(e,`${W.slice(0,i)}_${W.slice(i+1)}`,W[i],LET,"ms-MY","Huruf apa yang hilang?")},
  ()=>{const[e,w]=R(BMW.filter(x=>x[1].length<=6));return ORD(e,"Susun huruf untuk eja perkataan",[...w.toUpperCase()])},
  ()=>{const p=R(OPP),s=ri(0,1),w=p[s],o=p[1-s];return CH("↔️",`Apakah lawan kata "${w}"?`,o,OPP.flat())},
- ()=>R([()=>{const N=["Buku","Kucing","Meja","Sekolah","Ibu"],K=["Makan","Lari","Tidur","Menulis","Membaca"],S=["Cantik","Besar","Rajin","Tinggi","Manis"];return MAT("Seret perkataan ke jenis yang betul",[[R(N),"Kata Nama"],[R(K),"Kata Kerja"],[R(S),"Kata Sifat"]])},()=>CSR("📝",["Berat sama dipikul, ___ sama dijinjing.|ringan|berat|kecil","Ada gula ada ___.|semut|kucing|ikan","Bagai aur dengan ___.|tebing|tanah|batu","Malu bertanya ___.|sesat jalan|pandai|kenyang"])])(),
- ()=>CSR("✍️",["ber + jalan =|berjalan|menjalan|jalanan","me + baca =|membaca|bebaca|bacaan","makan + an =|makanan|memakan|bermakan","me + tari =|menari|metari|tarian","ber + main =|bermain|memain|mainan","minum + an =|minuman|meminum|berminum"])
+ ()=>R([()=>MAT("Seret perkataan ke jenis yang betul",[[R(KAT.N),"Kata Nama"],[R(KAT.K),"Kata Kerja"],[R(KAT.S),"Kata Sifat"]]),()=>CSR("✍️",IMB)])(),
+ ()=>R([()=>CSR("📝",PER),()=>CSR("✍️",IMB)])(),
+ ()=>R([()=>CSR("🔁",SIN),()=>CSR("📝",PER),()=>CSR("✍️",IMB)])()
 ];
 const COL=[["🍌","yellow"],["🍎","red"],["🐸","green"],["🌊","blue"],["🍊","orange"],["🍆","purple"]],COLN=COL.map(x=>x[1]);
 const ANI=[["🐱","Meow"],["🐶","Woof"],["🐮","Moo"],["🐔","Cluck"],["🐑","Baa"],["🦆","Quack"]];
@@ -159,18 +165,18 @@ const EN=[
  ()=>{const[e,w]=R(VOC);return CH("🔎",`Which one is "${w}"?`,e,VOC.map(x=>x[0]),"en-US")},
  ()=>{const[e,w]=R(VOC.filter(x=>x[1].length<=6));return ORD(e,"Spell the word",[...w.toUpperCase()],"en-US")},
  ()=>{const p=R(OPE),s=ri(0,1);return CH("↔️",`What is the opposite of "${p[s]}"?`,p[1-s],OPE.flat(),"en-US")},
- ()=>CSR("✏️",["There ___ three cats.|are|is|am","She ___ a red hat.|has|have|are","I ___ a student.|am|is|are","The boys ___ playing.|are|is|am","He ___ two books.|has|have|are"],"en-US"),
- ()=>CSR("⏪",["Yesterday I ___ to school. (go)|went|goed|gone","She ___ a cake. (eat)|ate|eated|eaten","They ___ football. (play)|played|plaied|playing","We ___ a bird. (see)|saw|seed|seen"],"en-US"),
- ()=>CSR("⭐",["tall, taller, ___|tallest|most tall|tallest of","One child, two ___|children|childs|childes","She ___ a book every day. (read)|reads|read|reading","good, better, ___|best|goodest|most good"],"en-US")
+ ()=>CSR("✏️",["There ___ three cats.|are|is|am","She ___ a red hat.|has|have|are","I ___ a student.|am|is|are","The boys ___ playing.|are|is|am","He ___ two books.|has|have|are","We ___ happy.|are|is|am","The dog ___ a bone.|has|have|are","They ___ my friends.|are|is|am","It ___ a sunny day.|is|are|am","My sister ___ a bag.|has|have|are","You ___ very kind.|are|is|am","There ___ a cat on the mat.|is|are|am"],"en-US"),
+ ()=>CSR("⏪",["Yesterday I ___ to school. (go)|went|goed|gone","She ___ a cake. (eat)|ate|eated|eaten","They ___ football. (play)|played|plaied|playing","We ___ a bird. (see)|saw|seed|seen","He ___ a letter. (write)|wrote|writed|written","I ___ milk. (drink)|drank|drinked|drunk","She ___ the door. (open)|opened|openned|open","We ___ to the park. (run)|ran|runned|run","They ___ a song. (sing)|sang|singed|sung","Dad ___ a car. (buy)|bought|buyed|buy","I ___ my homework. (do)|did|doed|done","The bird ___ away. (fly)|flew|flied|flown"],"en-US"),
+ ()=>CSR("⭐",["tall, taller, ___|tallest|most tall|tallest of","One child, two ___|children|childs|childes","She ___ a book every day. (read)|reads|read|reading","good, better, ___|best|goodest|most good","big, bigger, ___|biggest|bigest|most big","One mouse, two ___|mice|mouses|mices","One foot, two ___|feet|foots|feets","He ___ football on Sundays. (play)|plays|play|playing","small, smaller, ___|smallest|most small|smallest of","One tooth, two ___|teeth|tooths|teeths","Tom runs faster ___ Ben.|than|then|that","bad, worse, ___|worst|baddest|most bad"],"en-US")
 ];
 const SN=[
- ()=>R([()=>CSR("🔍",["Apa yang kita guna untuk melihat?|👁️|👂|👃","Apa yang tumbuh daripada biji benih?|🌱|🪨|🧸","Apa yang memberi cahaya pada siang hari?|☀️|🌙|⭐","Haiwan mana boleh terbang?|🐦|🐘|🐢"]),()=>MAT("Seret haiwan ke tempat tinggalnya",[["🐟","💧 Air"],["🐦","☁️ Langit"],["🐄","🌱 Darat"]])])(),
- ()=>CSR("🧠",["Anggota mana untuk menghidu?|👃 Hidung|👁️ Mata|👂 Telinga","Anggota mana untuk mendengar?|👂 Telinga|👅 Lidah|✋ Tangan","Yang mana benda hidup?|🌱 Pokok|🪨 Batu|🧸 Patung","Anggota mana untuk merasa makanan?|👅 Lidah|👃 Hidung|👁️ Mata"]),
- ()=>R([()=>MAT("Seret haiwan ke makanannya",[["🐄","🌿"],["🐱","🐟"],["🐒","🍌"]]),()=>CS("🌿","Bahagian tumbuhan yang menyerap air?|Akar|Daun|Bunga")])(),
- ()=>CSR("🔬",["Air yang membeku menjadi?|Ais|Wap|Awan","Magnet menarik?|Besi|Kayu|Kertas","Yang mana tenggelam dalam air?|🪨 Batu|🍃 Daun|🪵 Kayu","Air yang dipanaskan menjadi?|Wap|Ais|Batu"]),
- ()=>R([()=>ORD("🪐","Susun planet dari Matahari",["Utarid","Zuhrah","Bumi","Marikh"]),()=>ORD("🦋","Susun kitar hidup rama-rama",["🥚 Telur","🐛 Ulat","🟤 Kepompong","🦋 Rama-rama"])])(),
- ()=>R([()=>ORD("🌧️","Susun kitar air",["☀️ Penyejatan","☁️ Pemeluwapan","🌧️ Hujan"]),()=>CSR("❤️",["Organ yang mengepam darah?|❤️ Jantung|🫁 Paru-paru|🧠 Otak","Makanan mana ada protein?|🥚 Telur|🍬 Gula-gula|🧂 Garam"])])(),
- ()=>CSR("⚡",["Sumber tenaga boleh diperbaharui?|☀️ Suria|⛽ Petrol|🪨 Arang batu","Daya yang menarik objek ke Bumi?|Graviti|Magnet|Geseran","Tumbuhan membuat makanan melalui?|Fotosintesis|Respirasi|Evaporasi"])
+ ()=>PL("🔍",["Apa yang kita guna untuk melihat?|👁️|👂|👃","Apa yang kita guna untuk mendengar?|👂|👁️|👅","Apa yang tumbuh daripada biji benih?|🌱|🪨|🧸","Apa yang memberi cahaya pada siang hari?|☀️|🌙|⭐","Haiwan mana boleh terbang?|🐦|🐘|🐢","Apa yang kita guna untuk berjalan?|🦵 Kaki|👁️ Mata|👂 Telinga",{q:"Seret haiwan ke tempat tinggalnya",m:[["🐟","💧 Air"],["🐦","☁️ Langit"],["🐄","🌱 Darat"]]},{q:"Seret haiwan ke tempat tinggalnya",m:[["🐠","💧 Air"],["🦅","☁️ Langit"],["🐘","🌱 Darat"]]},{q:"Seret haiwan ke tempat tinggalnya",m:[["🐙","💧 Air"],["🦋","☁️ Langit"],["🐕","🌱 Darat"]]}]),
+ ()=>PL("🧠",["Anggota mana untuk menghidu?|👃 Hidung|👁️ Mata|👂 Telinga","Anggota mana untuk mendengar?|👂 Telinga|👅 Lidah|✋ Tangan","Yang mana benda hidup?|🌱 Pokok|🪨 Batu|🧸 Patung","Anggota mana untuk merasa makanan?|👅 Lidah|👃 Hidung|👁️ Mata","Apa yang kita perlukan untuk hidup?|💧 Air|🧸 Patung|🪨 Batu","Haiwan mana ada bulu?|🐱 Kucing|🐟 Ikan|🐍 Ular","Haiwan mana bertelur?|🐔 Ayam|🐱 Kucing|🐶 Anjing","Haiwan mana menyusukan anak?|🐄 Lembu|🐔 Ayam|🐟 Ikan"]),
+ ()=>PL("🌿",["Bahagian tumbuhan yang menyerap air?|Akar|Daun|Bunga","Bahagian tumbuhan yang menjadi buah?|Bunga|Akar|Batang","Bahagian tumbuhan yang membuat makanan?|Daun|Akar|Biji","Biji benih tumbuh menjadi?|Pokok|Batu|Air","Tumbuhan perlukan apa untuk hidup?|Air & cahaya|Gula-gula|Plastik",{q:"Seret haiwan ke makanannya",m:[["🐄","🌿"],["🐱","🐟"],["🐒","🍌"]]},{q:"Seret haiwan ke makanannya",m:[["🐰","🥕"],["🐶","🦴"],["🐝","🌸"]]},{q:"Seret haiwan ke makanannya",m:[["🐘","🌿"],["🐭","🧀"],["🐦","🪱"]]}]),
+ ()=>PL("🔬",["Air yang membeku menjadi?|Ais|Wap|Awan","Magnet menarik?|Besi|Kayu|Kertas","Yang mana tenggelam dalam air?|🪨 Batu|🍃 Daun|🪵 Kayu","Air yang dipanaskan menjadi?|Wap|Ais|Batu","Yang mana terapung dalam air?|🪵 Kayu|🪨 Batu|🔩 Skru","Ais yang dipanaskan menjadi?|Air|Batu|Kayu","Bunyi dihasilkan oleh?|Getaran|Cahaya|Warna","Cahaya tidak boleh menembusi?|🧱 Dinding|🪟 Kaca|💧 Air","Yang mana memantulkan cahaya?|🪞 Cermin|🪨 Batu|🧱 Bata","Yang mana dilekat magnet?|📎 Klip kertas|🍃 Daun|🪵 Kayu"]),
+ ()=>PL("🪐",[{b:"🪐",q:"Susun planet dari Matahari",o:["Utarid","Zuhrah","Bumi","Marikh"]},{b:"🪐",q:"Susun planet dari Matahari",o:["Bumi","Marikh","Musytari","Zuhal"]},{b:"🦋",q:"Susun kitar hidup rama-rama",o:["🥚 Telur","🐛 Ulat","🟤 Kepompong","🦋 Rama-rama"]},{b:"🐔",q:"Susun kitar hidup ayam",o:["🥚 Telur","🐥 Anak ayam","🐔 Ayam"]},{b:"🌳",q:"Susun pertumbuhan pokok",o:["🌰 Biji","🌱 Anak pokok","🌳 Pokok"]},"Haiwan makan tumbuhan dipanggil?|Herbivor|Karnivor|Omnivor","Haiwan makan daging dipanggil?|Karnivor|Herbivor|Omnivor","Haiwan makan kedua-duanya dipanggil?|Omnivor|Herbivor|Karnivor","Kita tinggal di planet?|🌍 Bumi|🔴 Marikh|🪐 Zuhal","Bintang paling dekat dengan Bumi?|☀️ Matahari|🌙 Bulan|⭐ Bintang Utara"]),
+ ()=>PL("❤️",[{b:"🌧️",q:"Susun kitar air",o:["☀️ Penyejatan","☁️ Pemeluwapan","🌧️ Hujan"]},"Organ yang mengepam darah?|❤️ Jantung|🫁 Paru-paru|🧠 Otak","Makanan mana ada protein?|🥚 Telur|🍬 Gula-gula|🧂 Garam","Organ untuk bernafas?|🫁 Paru-paru|❤️ Jantung|🧠 Otak","Organ untuk berfikir?|🧠 Otak|❤️ Jantung|🫁 Paru-paru","Vitamin C ada dalam?|🍊 Oren|🍟 Kentang goreng|🍬 Gula-gula","Tulang berfungsi untuk?|Menyokong badan|Mendengar|Menghidu","Makanan berkarbohidrat?|🍚 Nasi|🥩 Daging|🥬 Sayur","Makanan untuk membina badan?|🐟 Ikan|🍬 Gula-gula|🧂 Garam","Makanan mana mengandungi kalsium?|🥛 Susu|🍬 Gula-gula|🍟 Kentang goreng"]),
+ ()=>PL("⚡",["Sumber tenaga boleh diperbaharui?|☀️ Suria|⛽ Petrol|🪨 Arang batu","Daya yang menarik objek ke Bumi?|Graviti|Magnet|Geseran","Tumbuhan membuat makanan melalui?|Fotosintesis|Respirasi|Evaporasi","Tenaga dalam makanan datang daripada?|☀️ Matahari|🌙 Bulan|🪨 Batu","Bahan konduktor elektrik?|Kuprum|Getah|Kayu","Bahan penebat elektrik?|Getah|Kuprum|Besi","Litar elektrik memerlukan?|Bateri|Batu|Pasir","Daya yang melawan pergerakan?|Geseran|Graviti|Magnet","Gerhana Matahari berlaku bila Bulan antara Matahari dan?|Bumi|Marikh|Zuhal","Haiwan hidup di darat dan air?|🐸 Katak|🐟 Ikan|🐦 Burung","Pembakaran memerlukan gas?|Oksigen|Nitrogen|Helium","Bunyi bergerak paling laju melalui?|Pepejal|Gas|Vakum",{b:"🌈",q:"Susun warna pelangi",o:["🔴 Merah","🟠 Jingga","🟡 Kuning","🟢 Hijau"]}])
 ];
 const GEN={bm:BM,mt:MT,en:EN,sn:SN};
 const LVN=["Prasekolah","Tahun 1","Tahun 2","Tahun 3","Tahun 4","Tahun 5","Tahun 6"];
@@ -179,6 +185,11 @@ const SUBN={bm:"Bahasa Melayu",mt:"Matematik",en:"English",sn:"Sains"};
 // ---------- State & helpers ----------
 let sid=0,sub="bm",lv=0,round=0,score=0,cur=null,locked=false,sel=null,okc=0,mist=0,fingers=0,holdStart=0,holdVal=0;
 const rounds=()=>5+lv,HOLD_MS=1200;
+let asked=new Set();const recent={};
+const sig=q=>q.type+"|"+(q.type==="count"?q.a:q.type==="match"?q.pairs.map(p=>p[0]).sort().join():q.type==="order"?q.seq.join():q.q+"|"+q.big+"|"+q.opts[q.a]);
+function newQ(){const f=GEN[sub][lv],rec=recent[sub+lv]||new Set();let q;
+  for(let i=0;i<90;i++){q=f();const s=sig(q);if(!asked.has(s)&&(i>=55||!rec.has(s))){asked.add(s);return q}}
+  return q}
 const show=id=>document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id));
 const isGame=()=>$("game").classList.contains("on");
 function speak(t,lang){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=lang;u.rate=.85;u.pitch=1.2;speechSynthesis.speak(u)}catch(e){}}
@@ -199,10 +210,10 @@ $("rep").onclick=$("rep2").onclick=report;
 $("clr").onclick=()=>{if(confirm("Padam semua sejarah?")){setH([]);report()}};
 $("cambtn").onclick=startCamera;
 
-function start(){sid++;round=0;score=0;show("game");next();if(!camOn)startCamera()}
+function start(){sid++;asked=new Set();round=0;score=0;show("game");next();if(!camOn)startCamera()}
 function next(){
   if(round>=rounds())return finish();
-  round++;locked=false;sel=null;okc=0;mist=0;cur=GEN[sub][lv]();
+  round++;locked=false;sel=null;okc=0;mist=0;cur=newQ();
   $("rd").textContent=`${round}/${rounds()} · ${lv?"T"+lv:"Pra"}`;$("sc").textContent=`⭐ ${score}`;
   const big=$("big");big.textContent=cur.big;big.classList.toggle("s",cur.big.length>14||/^[A-Z_]+$/.test(cur.big)&&false);
   $("q").textContent=cur.q;holdVal=0;holdStart=0;$("bar").firstElementChild.style.width="0";
@@ -269,7 +280,7 @@ function drop(tok,slot){
 
 // ---------- End, history, report ----------
 function finish(){
-  const n=rounds(),pct=Math.round(score/n*100);
+  recent[sub+lv]=asked;const n=rounds(),pct=Math.round(score/n*100);
   const h=getH();h.push({d:Date.now(),l:lv,s:sub,sc:score,n,p:key()});setH(h);
   show("end");$("stars").textContent="⭐".repeat(score)+"☆".repeat(n-score);
   $("endt").textContent=pct>=80?"🏆 Hebat!":pct>=50?"🎉 Pandai!":"💪 Cuba lagi!";
