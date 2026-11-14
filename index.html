@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#4dabf7">
+<title>Jom Main! Permainan Tadika</title>
+<style>
+:root{--bg:#fff6d6;--card:#fff;--ink:#2b2d42;--a:#ff6b6b;--b:#4dabf7;--c:#51cf66;--d:#ffa94d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:"Comic Sans MS","Trebuchet MS",system-ui,sans-serif;overflow:hidden}
+body{padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom)}
+.screen{display:none;height:100%;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center}
+.screen.on{display:flex}
+h1{font-size:clamp(28px,8vw,46px);margin:0}
+.menu{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:440px}
+.btn{border:0;border-radius:24px;padding:18px 8px;font:inherit;font-size:20px;font-weight:700;color:#fff;box-shadow:0 6px 0 rgba(0,0,0,.18)}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.btn span{display:block;font-size:44px}
+#top{width:100%;max-width:520px;display:flex;justify-content:space-between;font-size:22px;font-weight:700}
+#big{font-size:clamp(60px,22vw,110px);line-height:1.1;min-height:1.2em;word-break:break-word}
+#q{font-size:clamp(20px,6vw,30px);font-weight:700}
+#opts{display:flex;gap:10px;width:100%;max-width:520px;justify-content:center}
+.opt{flex:1;background:var(--card);border:4px solid #dee2e6;border-radius:22px;padding:10px 4px;font-size:clamp(28px,9vw,48px)}
+.opt small{display:block;font-size:16px;opacity:.7}
+.opt.ok{border-color:var(--c);background:#d3f9d8}.opt.no{border-color:var(--a);background:#ffe3e3}
+#camwrap{position:relative;width:150px;height:112px;border-radius:18px;overflow:hidden;border:4px solid var(--b);background:#000}
+video,canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+#fing{position:absolute;right:6px;bottom:2px;font-size:34px;font-weight:700;color:#fff;text-shadow:0 0 6px #000;transform:none}
+#bar{width:100%;max-width:520px;height:14px;background:#dee2e6;border-radius:9px;overflow:hidden}
+#bar i{display:block;height:100%;width:0;background:var(--c);transition:width .1s}
+#msg{font-size:18px;min-height:1.4em}
+.small{font-size:16px;opacity:.75;max-width:420px}
+.link{background:none;border:0;font:inherit;text-decoration:underline;color:var(--ink);font-size:16px}
+</style>
+</head>
+<body>
+
+<section id="home" class="screen on">
+  <h1>🌈 Jom Main!</h1>
+  <div>Pilih mata pelajaran / Pick a subject</div>
+  <div class="menu">
+    <button class="btn" style="background:var(--a)" data-s="bm"><span>🅰️</span>Bahasa Melayu</button>
+    <button class="btn" style="background:var(--b)" data-s="mt"><span>🔢</span>Matematik</button>
+    <button class="btn" style="background:var(--c)" data-s="en"><span>🎨</span>English</button>
+    <button class="btn" style="background:var(--d)" data-s="sn"><span>🐾</span>Sains &amp; Alam</button>
+  </div>
+  <div class="small">Guna kamera &amp; tangan! Tunjuk jari 1, 2 atau 3 untuk menjawab. Use your fingers to answer!</div>
+</section>
+
+<section id="game" class="screen">
+  <div id="top"><span id="sc">⭐ 0</span><span id="rd">1/5</span><button class="link" id="back">🏠</button></div>
+  <div id="big"></div>
+  <div id="q"></div>
+  <div id="opts"></div>
+  <div id="bar"><i></i></div>
+  <div id="msg"></div>
+  <div id="camwrap"><video id="v" playsinline muted autoplay></video><canvas id="cv"></canvas><div id="fing">0</div></div>
+  <button class="link" id="cambtn">📷 Hidupkan kamera / Turn on camera</button>
+</section>
+
+<section id="end" class="screen">
+  <h1 id="endt">🎉</h1>
+  <div id="stars" style="font-size:48px"></div>
+  <button class="btn" style="background:var(--b);padding:18px 30px" id="again">Main lagi!</button>
+  <button class="link" id="home2">🏠 Menu</button>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.js" crossorigin="anonymous"></script>
+<script>
+"use strict";
+// ---------- Content (based on KSPK Prasekolah: Bahasa, Numerasi, English, Sains & Alam) ----------
+const R=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(p=>p[1]);
+function pick3(correct,pool){const w=shuffle(pool.filter(x=>x!==correct)).slice(0,2);const o=shuffle([correct,...w]);return{opts:o,a:o.indexOf(correct)}}
+
+const BM=[["🍎","Epal"],["🐱","Kucing"],["🐟","Ikan"],["🌙","Bulan"],["🏠","Rumah"],["🚗","Kereta"],["🍌","Pisang"],["🐘","Gajah"],["⭐","Bintang"],["🐔","Ayam"],["🌳","Pokok"],["🥛","Susu"]];
+const LET=[..."ABCDEFGHIJKLMNOPRSTUY"];
+const COL=[["🍌","yellow"],["🍎","red"],["🐸","green"],["🌊","blue"],["🍊","orange"],["🍆","purple"],["🥥","brown"],["☁️","white"]];
+const COLN=["red","blue","green","yellow","orange","purple"];
+const ANI=[["🐱","Meow!"],["🐶","Woof!"],["🐮","Moo!"],["🐔","Cluck!"],["🐑","Baa!"],["🦆","Quack!"]];
+const SN=[["Haiwan mana hidup di dalam air?","🐟",["🐟","🐱","🐔"]],["Apa yang kita guna untuk melihat?","👁️",["👁️","👂","👃"]],["Apa yang tumbuh daripada biji benih?","🌱",["🌱","🪨","🧸"]],["Apa yang memberi cahaya pada siang hari?","☀️",["☀️","🌙","⭐"]],["Apa yang kita minum bila dahaga?","💧",["💧","🍟","🍬"]],["Haiwan mana boleh terbang?","🐦",["🐦","🐘","🐢"]]];
+
+const GEN={
+ bm(){const [e,w]=R(BM);const L=w[0].toUpperCase();const p=pick3(L,LET);
+  return{big:e,q:`${w} bermula dengan huruf apa?`,say:`${w}. Bermula dengan huruf apa?`,lang:"ms-MY",...p,type:"choice"}},
+ mt(){const n=1+Math.floor(Math.random()*5);const e=R(["🍎","⭐","🐥","🎈","🍓"]);
+  return{big:e.repeat(n),q:"Berapa banyak? Tunjuk jari!",say:"Berapa banyak? Tunjuk jari!",lang:"ms-MY",a:n,type:"count"}},
+ en(){if(Math.random()<.5){const [e,c]=R(COL);const p=pick3(c,COLN.concat(c));return{big:e,q:"What colour is it?",say:"What colour is it?",lang:"en-US",...p,type:"choice"}}
+  const [e,s]=R(ANI);const p=pick3(e,ANI.map(x=>x[0]));return{big:s,q:"Which animal says this?",say:`Which animal says ${s.replace("!","")}?`,lang:"en-US",...p,type:"choice"}},
+ sn(){const [q,ans,pool]=R(SN);const p=pick3(ans,pool);return{big:"🔍",q,say:q,lang:"ms-MY",...p,type:"choice"}}
+};
+
+// ---------- State & UI ----------
+const $=id=>document.getElementById(id);
+let subject="bm",round=0,score=0,cur=null,locked=false,fingers=0,holdStart=0,holdVal=0;
+const ROUNDS=5,HOLD_MS=1200;
+const show=id=>{document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id))};
+function speak(t,lang){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=lang;u.rate=.85;u.pitch=1.2;speechSynthesis.speak(u)}catch(e){}}
+function beep(ok){try{const c=beep.c||(beep.c=new (window.AudioContext||window.webkitAudioContext)());const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=ok?880:220;g.gain.value=.15;o.start();o.stop(c.currentTime+(ok?.25:.35))}catch(e){}}
+
+document.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{subject=b.dataset.s;start()});
+$("back").onclick=$("home2").onclick=()=>{show("home");speechSynthesis.cancel()};
+$("again").onclick=()=>start();
+$("cambtn").onclick=startCamera;
+
+function start(){round=0;score=0;show("game");next();if(!camOn)startCamera()}
+function next(){
+  if(round>=ROUNDS)return finish();
+  round++;locked=false;cur=GEN[subject]();
+  $("rd").textContent=`${round}/${ROUNDS}`;$("sc").textContent=`⭐ ${score}`;
+  $("big").textContent=cur.big;$("q").textContent=cur.q;$("msg").textContent=cur.type==="count"?"✋ Tunjuk 1–5 jari":"✋ Tunjuk 1, 2 atau 3 jari (atau sentuh)";
+  const o=$("opts");o.innerHTML="";
+  if(cur.type==="choice")cur.opts.forEach((t,i)=>{const d=document.createElement("button");d.className="opt";d.innerHTML=`${t}<small>${"☝️✌️🤟"[i*2>3?2:i]===undefined?i+1:["☝️","✌️","🤟"][i]}</small>`;d.onclick=()=>answer(i);o.appendChild(d)});
+  else for(let i=1;i<=5;i++){const d=document.createElement("button");d.className="opt";d.textContent=i;d.style.fontSize="30px";d.onclick=()=>answer(i);o.appendChild(d)}
+  holdVal=0;holdStart=0;$("bar").firstElementChild.style.width="0";
+  speak(cur.say,cur.lang);
+}
+function answer(v){
+  if(locked)return;locked=true;
+  const ok=cur.type==="choice"?v===cur.a:v===cur.a;
+  const btns=[...$("opts").children];
+  if(cur.type==="choice"){btns[v].classList.add(ok?"ok":"no");if(!ok)btns[cur.a].classList.add("ok")}
+  else btns[cur.a-1].classList.add("ok");
+  if(ok){score++;$("msg").textContent="🎉 Bagus! Great job!";speak("Bagus!","ms-MY")}else{$("msg").textContent="😊 Cuba lagi nanti!";speak("Cuba lagi","ms-MY")}
+  beep(ok);$("sc").textContent=`⭐ ${score}`;
+  setTimeout(next,2000);
+}
+function finish(){
+  show("end");$("stars").textContent="⭐".repeat(score)+"☆".repeat(ROUNDS-score);
+  $("endt").textContent=score>=4?"🏆 Hebat!":score>=2?"🎉 Pandai!":"💪 Cuba lagi!";
+  speak(score>=4?"Hebat! Awak pandai!":"Terima kasih sudah bermain!","ms-MY");
+}
+
+// ---------- Camera + hand gestures (MediaPipe Hands) ----------
+let camOn=false,hands=null;
+const video=$("v"),cv=$("cv"),ctx=cv.getContext("2d");
+async function startCamera(){
+  if(camOn)return;
+  if(!navigator.mediaDevices||!window.Hands){$("msg").textContent="Kamera tidak tersedia — sentuh jawapan ya!";return}
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:480,height:360},audio:false});
+    video.srcObject=stream;await video.play();camOn=true;$("cambtn").style.display="none";
+    hands=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/${f}`});
+    hands.setOptions({maxNumHands:1,modelComplexity:0,minDetectionConfidence:.6,minTrackingConfidence:.5});
+    hands.onResults(onHands);
+    loop();
+  }catch(e){$("msg").textContent="Sila benarkan kamera, atau sentuh jawapan."}
+}
+let busy=false;
+async function loop(){
+  if(!camOn)return;
+  if(!busy&&video.readyState>=2){busy=true;try{await hands.send({image:video})}catch(e){}busy=false}
+  requestAnimationFrame(loop);
+}
+function countFingers(lm,label){
+  const d=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+  const wrist=lm[0];let n=0;
+  [[8,6],[12,10],[16,14],[20,18]].forEach(([t,p])=>{if(d(lm[t],wrist)>d(lm[p],wrist)*1.08)n++});
+  if(d(lm[4],lm[17])>d(lm[3],lm[17])*1.05&&d(lm[4],lm[9])>d(lm[3],lm[9]))n++;
+  return n;
+}
+function onHands(r){
+  cv.width=video.videoWidth||480;cv.height=video.videoHeight||360;ctx.clearRect(0,0,cv.width,cv.height);
+  const lm=r.multiHandLandmarks&&r.multiHandLandmarks[0];
+  if(!lm){fingers=0;$("fing").textContent="–";holdStart=0;holdVal=0;$("bar").firstElementChild.style.width="0";return}
+  ctx.fillStyle="#51cf66";lm.forEach(p=>{ctx.beginPath();ctx.arc(p.x*cv.width,p.y*cv.height,4,0,7);ctx.fill()});
+  fingers=countFingers(lm);$("fing").textContent=fingers;
+  if(locked||!cur||!screenIsGame())return;
+  const max=cur.type==="count"?5:3;
+  if(fingers<1||fingers>max){holdStart=0;holdVal=0;$("bar").firstElementChild.style.width="0";return}
+  const now=performance.now();
+  if(fingers!==holdVal){holdVal=fingers;holdStart=now}
+  const pct=Math.min(1,(now-holdStart)/HOLD_MS);$("bar").firstElementChild.style.width=pct*100+"%";
+  if(pct>=1){const v=fingers;holdVal=0;holdStart=0;answer(cur.type==="choice"?v-1:v)}
+}
+const screenIsGame=()=>$("game").classList.contains("on");
+if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+</script>
+</body>
+</html>
