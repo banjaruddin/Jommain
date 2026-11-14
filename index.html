@@ -15,7 +15,7 @@
 html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:"Comic Sans MS","Trebuchet MS",system-ui,sans-serif;overflow:hidden}
 body{padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom)}
 .screen{display:none;height:100%;flex-direction:column;align-items:center;gap:12px;text-align:center;overflow-y:auto;padding:10px 0}
-.screen.on{display:flex}#home,#end{justify-content:center}
+.screen.on{display:flex}#home,#end{justify-content:center;gap:16px}
 h1{font-size:clamp(26px,8vw,42px);margin:0}h2{margin:0}
 .lv{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;max-width:460px}
 .chip{border:3px solid #dee2e6;background:#fff;border-radius:16px;padding:8px 2px;font:inherit;font-size:15px;font-weight:700;color:var(--ink)}
@@ -44,15 +44,38 @@ video,canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;t
 .small{font-size:15px;opacity:.75;max-width:420px}.link{background:none;border:0;font:inherit;text-decoration:underline;color:var(--ink);font-size:16px}
 table{border-collapse:collapse;width:100%;max-width:520px;background:#fff;border-radius:14px;overflow:hidden;font-size:15px}td,th{padding:7px 5px;border-bottom:1px solid #eee}th{background:#d0ebff}
 .row{width:100%;max-width:520px;display:flex;justify-content:space-between;background:#fff;padding:8px 12px;border-radius:12px;font-size:15px}
+#splash{justify-content:center;gap:22px}
+#ttl{display:flex;justify-content:center;flex-wrap:wrap;margin-top:6px}
+#ttl span{display:inline-block;font-size:clamp(40px,13vw,72px);font-weight:900;animation:bn 1.1s ease-in-out infinite;cursor:pointer}
+@keyframes bn{0%,100%{transform:translateY(0) scaleY(1)}40%{transform:translateY(-26px) scaleY(1.1)}60%{transform:translateY(0) scaleY(.85)}}
+#ttl span.pop{animation:pp .5s}@keyframes pp{50%{transform:scale(1.6) rotate(15deg)}}
+#arena{position:relative;width:100%;max-width:520px;height:140px;background:#fff8;border-radius:20px;overflow:hidden;flex:none}
+.bl{position:absolute;left:0;top:0;width:54px;height:54px;display:flex;align-items:center;justify-content:center;border-radius:50%;font-size:30px;font-weight:900;color:#fff;cursor:pointer;touch-action:manipulation}
+.balloon{position:fixed;bottom:-70px;font-size:48px;z-index:5;animation:fl linear forwards;cursor:pointer;touch-action:manipulation}
+@keyframes fl{to{transform:translateY(-115vh)}}
+.conf{position:fixed;pointer-events:none;z-index:99;font-size:22px;animation:cf .9s ease-out forwards}
+@keyframes cf{to{transform:translate(var(--x),var(--y)) rotate(360deg);opacity:0}}
+#nm{font:inherit;font-size:18px;padding:10px 14px;border:3px solid var(--b);border-radius:16px;width:62%;max-width:260px;text-align:center;user-select:text;-webkit-user-select:text}
+.credit{font-size:13px;line-height:1.4;opacity:.7}
 </style>
 </head>
 <body>
 
-<section id="home" class="screen on">
-  <h1>🌈 Jom Main!</h1>
-  <div>1️⃣ Pilih tahap / Pick level</div>
+<section id="splash" class="screen on">
+  <div id="ttl"></div>
+  <div id="arena"></div>
+  <div><input id="nm" maxlength="12" placeholder="Taip nama kamu ✏️"> <button class="btn" style="background:var(--a);padding:10px 14px;font-size:16px" id="go">Melantun!</button></div>
+  <b id="pc" style="display:none"></b>
+  <button class="btn" style="background:var(--c);padding:14px 36px;font-size:24px" id="play">▶️ Jom Main!</button>
+  <button class="link" id="seeres" style="display:none"></button>
+  <div class="credit">Dicipta oleh <b>Amirul Afiq Ariffin</b><br>Daripada ibu bapa, untuk ibu bapa 💛</div>
+</section>
+
+<section id="home" class="screen">
+  <h1>🌈 Jom Main!</h1><div id="hi" style="font-size:20px;font-weight:700"></div>
+  <div>Pilih tahap</div>
   <div class="lv" id="lv"></div>
-  <div>2️⃣ Pilih subjek / Pick subject</div>
+  <div>Pilih subjek</div>
   <div class="menu">
     <button class="btn" style="background:var(--a)" data-s="bm"><span>🅰️</span>Bahasa Melayu</button>
     <button class="btn" style="background:var(--b)" data-s="mt"><span>🔢</span>Matematik</button>
@@ -60,11 +83,11 @@ table{border-collapse:collapse;width:100%;max-width:520px;background:#fff;border
     <button class="btn" style="background:var(--d)" data-s="sn"><span>🐾</span>Sains</button>
   </div>
   <button class="btn" style="background:#845ef7;padding:10px 24px;font-size:17px" id="rep">📒 Kad Laporan / Report</button>
-  <div class="small">Tunjuk jari ✋ ke kamera, seret &amp; lepas 👆, atau sentuh. Soalan jadi lebih susah ikut tahap.</div>
+  <button class="link" data-x>🚪 Keluar</button>
 </section>
 
 <section id="game" class="screen" style="justify-content:flex-start">
-  <div id="top"><span id="sc">⭐ 0</span><span id="rd">1/5</span><button class="link" id="back">🏠</button></div>
+  <div id="top"><span id="sc">⭐ 0</span><span id="rd">1/5</span><span><button class="link" id="back">🏠</button> <button class="link" data-x>🚪</button></span></div>
   <div id="big"></div><div id="q"></div>
   <div id="opts"></div>
   <div id="dz"><div id="slots"></div><div id="tray"></div></div>
@@ -77,16 +100,17 @@ table{border-collapse:collapse;width:100%;max-width:520px;background:#fff;border
   <h1 id="endt">🎉</h1><div id="stars" style="font-size:32px;max-width:420px"></div><div id="endinfo"></div>
   <button class="btn" style="background:var(--b);padding:14px 30px" id="again">Main lagi!</button>
   <button class="btn" style="background:var(--c);padding:14px 30px;display:none" id="upg">⬆️ Tahap seterusnya</button>
-  <button class="link" id="rep2">📒 Kad Laporan</button><button class="link" id="home2">🏠 Menu</button>
+  <button class="link" id="rep2">📒 Kad Laporan</button><button class="link" id="home2">🏠 Menu</button><button class="link" data-x>🚪 Keluar</button>
 </section>
 
 <section id="report" class="screen" style="justify-content:flex-start">
-  <h2>📒 Kad Laporan</h2><div id="sum"></div><div id="tbl" style="width:100%;max-width:520px"></div>
+  <h2>📒 Kad Laporan</h2><div id="rname" style="font-weight:700"></div><div id="sum"></div><div id="tbl" style="width:100%;max-width:520px"></div>
   <h2 style="font-size:18px">Sejarah terkini</h2><div id="hist" style="width:100%;max-width:520px;display:flex;flex-direction:column;gap:6px"></div>
   <button class="btn" style="background:var(--b);padding:12px 30px" id="home3">🏠 Menu</button>
-  <button class="link" id="clr">🗑️ Padam sejarah</button>
+  <button class="link" id="clr">🗑️ Padam sejarah</button><button class="link" data-x>🚪 Keluar</button>
 </section>
 
+<div id="xm" style="display:none;position:fixed;inset:0;background:#0007;z-index:200;align-items:center;justify-content:center;padding:20px"><div style="background:#fff;border-radius:24px;padding:20px;max-width:340px;width:100%;text-align:center;display:flex;flex-direction:column;gap:12px"><h2>🚪 Nak keluar?</h2><div id="xi" class="small" style="margin:0 auto"></div><button class="btn" id="xs" style="background:var(--c)">💾 Simpan &amp; keluar</button><button class="btn" id="xd" style="background:var(--a)">🗑️ Padam &amp; keluar</button><button class="link" id="xc">Batal</button></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.js" crossorigin="anonymous"></script>
 <script>
 "use strict";
@@ -153,15 +177,17 @@ const LVN=["Prasekolah","Tahun 1","Tahun 2","Tahun 3","Tahun 4","Tahun 5","Tahun
 const SUBN={bm:"Bahasa Melayu",mt:"Matematik",en:"English",sn:"Sains"};
 
 // ---------- State & helpers ----------
-let sub="bm",lv=0,round=0,score=0,cur=null,locked=false,sel=null,okc=0,mist=0,fingers=0,holdStart=0,holdVal=0;
+let sid=0,sub="bm",lv=0,round=0,score=0,cur=null,locked=false,sel=null,okc=0,mist=0,fingers=0,holdStart=0,holdVal=0;
 const rounds=()=>5+lv,HOLD_MS=1200;
 const show=id=>document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id===id));
 const isGame=()=>$("game").classList.contains("on");
 function speak(t,lang){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=lang;u.rate=.85;u.pitch=1.2;speechSynthesis.speak(u)}catch(e){}}
 function beep(ok){try{const c=beep.c||(beep.c=new (window.AudioContext||window.webkitAudioContext)()),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=ok?880:220;g.gain.value=.15;o.start();o.stop(c.currentTime+.3)}catch(e){}}
 const HK="jm_hist";
-const getH=()=>{try{return JSON.parse(localStorage.getItem(HK))||[]}catch(e){return[]}};
-const setH=h=>{try{localStorage.setItem(HK,JSON.stringify(h.slice(-200)))}catch(e){}};
+let who="";const key=()=>who.trim().toLowerCase();
+const getAll=()=>{try{return JSON.parse(localStorage.getItem(HK))||[]}catch(e){return[]}};
+const getH=()=>getAll().filter(x=>(x.p||"")===key());
+const setH=h=>{try{localStorage.setItem(HK,JSON.stringify(getAll().filter(x=>(x.p||"")!==key()).concat(h.slice(-100))))}catch(e){}};
 
 // level chips
 LVN.forEach((n,i)=>{const b=document.createElement("button");b.className="chip"+(i===0?" on":"");b.textContent=i===0?"Pra":"T"+i;b.title=n;b.onclick=()=>{lv=i;document.querySelectorAll(".chip").forEach((c,j)=>c.classList.toggle("on",j===i))};$("lv").appendChild(b)});
@@ -173,7 +199,7 @@ $("rep").onclick=$("rep2").onclick=report;
 $("clr").onclick=()=>{if(confirm("Padam semua sejarah?")){setH([]);report()}};
 $("cambtn").onclick=startCamera;
 
-function start(){round=0;score=0;show("game");next();if(!camOn)startCamera()}
+function start(){sid++;round=0;score=0;show("game");next();if(!camOn)startCamera()}
 function next(){
   if(round>=rounds())return finish();
   round++;locked=false;sel=null;okc=0;mist=0;cur=GEN[sub][lv]();
@@ -194,7 +220,7 @@ function next(){
 function result(ok,extra=""){
   if(locked)return;locked=true;if(ok)score++;beep(ok);$("sc").textContent=`⭐ ${score}`;
   $("msg").textContent=(ok?"🎉 Bagus! Great job!":"😊 Cuba lagi nanti!")+extra;speak(ok?"Bagus!":"Cuba lagi","ms-MY");
-  setTimeout(next,ok?1800:2600);
+  const s=sid;setTimeout(()=>{if(s===sid)next()},ok?1800:2600);
 }
 function answer(v){
   if(locked)return;const b=[...$("opts").children];
@@ -244,7 +270,7 @@ function drop(tok,slot){
 // ---------- End, history, report ----------
 function finish(){
   const n=rounds(),pct=Math.round(score/n*100);
-  const h=getH();h.push({d:Date.now(),l:lv,s:sub,sc:score,n});setH(h);
+  const h=getH();h.push({d:Date.now(),l:lv,s:sub,sc:score,n,p:key()});setH(h);
   show("end");$("stars").textContent="⭐".repeat(score)+"☆".repeat(n-score);
   $("endt").textContent=pct>=80?"🏆 Hebat!":pct>=50?"🎉 Pandai!":"💪 Cuba lagi!";
   $("endinfo").textContent=`${LVN[lv]} · ${SUBN[sub]} · ${score}/${n} (${pct}%)`;
@@ -253,7 +279,7 @@ function finish(){
 }
 const grade=p=>p>=80?"A":p>=60?"B":p>=40?"C":"D";
 function report(){
-  show("report");const h=getH(),tot=h.reduce((a,x)=>a+x.sc,0),all=h.reduce((a,x)=>a+x.n,0),pct=all?Math.round(tot/all*100):0;
+  show("report");$("rname").textContent=getName()||"Tetamu";const h=getH(),tot=h.reduce((a,x)=>a+x.sc,0),all=h.reduce((a,x)=>a+x.n,0),pct=all?Math.round(tot/all*100):0;
   $("sum").innerHTML=h.length?`<div style="font-size:42px">${pct>=80?"🥇":pct>=60?"🥈":"🥉"}</div>${h.length} permainan · ⭐ ${tot} bintang · Purata ${pct}% (Gred ${grade(pct)})`:"Belum ada permainan. Jom main dulu! 🎮";
   let t="<table><tr><th>Subjek</th><th>Main</th><th>Purata</th><th>Gred</th><th>Tahap terbaik</th></tr>";
   Object.keys(SUBN).forEach(s=>{const g=h.filter(x=>x.s===s);if(!g.length){t+=`<tr><td>${SUBN[s]}</td><td colspan=4>–</td></tr>`;return}
@@ -272,7 +298,7 @@ async function startCamera(){
   try{
     video.srcObject=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:480,height:360},audio:false});
     await video.play();camOn=true;$("cambtn").style.display="none";
-    hands=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/${f}`});
+    hands=hands||new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/${f}`});
     hands.setOptions({maxNumHands:2,modelComplexity:0,minDetectionConfidence:.6,minTrackingConfidence:.5});
     hands.onResults(onHands);loop();
   }catch(e){$("msg").textContent="Sila benarkan kamera, atau guna sentuhan."}
@@ -296,6 +322,52 @@ function onHands(r){
   const p=Math.min(1,(now-holdStart)/HOLD_MS);bar.style.width=p*100+"%";
   if(p>=1){const v=fingers;holdVal=0;holdStart=0;answer(cur.type==="choice"?v-1:v)}
 }
+// ---------- Splash: bouncing name game ----------
+const COLS=["#ff6b6b","#4dabf7","#51cf66","#ffa94d","#845ef7","#f783ac","#20c997"];
+const getName=()=>who;
+function tone(f,d=.2){try{const c=beep.c||(beep.c=new (window.AudioContext||window.webkitAudioContext)()),o=c.createOscillator(),g=c.createGain();o.type="triangle";o.connect(g);g.connect(c.destination);o.frequency.value=f;g.gain.value=.15;o.start();o.stop(c.currentTime+d)}catch(e){}}
+function burst(x,y){for(let i=0;i<10;i++){const s=document.createElement("div");s.className="conf";s.textContent=R(["🎉","✨","⭐","💖","🌟"]);s.style.left=x+"px";s.style.top=y+"px";s.style.setProperty("--x",ri(-70,70)+"px");s.style.setProperty("--y",ri(-90,40)+"px");document.body.appendChild(s);setTimeout(()=>s.remove(),900)}}
+"JOM MAIN!".split("").forEach((c,i)=>{const s=document.createElement("span");s.textContent=c===" "?"\u00a0":c;s.style.color=COLS[i%7];s.style.animationDelay=i*.1+"s";
+  s.onanimationend=ev=>{if(ev.animationName==="pp")s.classList.remove("pop")};
+  if(c.trim())s.onclick=e=>{speak(c,"ms-MY");tone(400+i*60);burst(e.clientX,e.clientY);s.classList.add("pop")};$("ttl").appendChild(s)});
+let pops=0,tiles=[],looping=false;
+setInterval(()=>{if(!$("splash").classList.contains("on"))return;const b=document.createElement("div");b.className="balloon";b.textContent=R(["🎈","🎈","⭐"]);b.style.left=ri(2,86)+"%";b.style.animationDuration=ri(6,10)+"s";
+  b.onpointerdown=e=>{b.remove();$("pc").textContent="🎈 "+(++pops);tone(500+ri(0,500),.15);burst(e.clientX,e.clientY)};b.onanimationend=()=>b.remove();document.body.appendChild(b)},2800);
+function launch(name){
+  const a=$("arena");a.innerHTML="";const W=a.clientWidth||320,H=a.clientHeight||140;
+  tiles=[...name.toUpperCase()].filter(c=>c.trim()).slice(0,12).map((c,i)=>{
+    const e=document.createElement("div");e.className="bl";e.textContent=c;e.style.background=COLS[i%7];a.appendChild(e);
+    const o={e,x:ri(0,W-54),y:ri(0,H-54),vx:(Math.random()<.5?-1:1)*(1.5+Math.random()*2),vy:(Math.random()<.5?-1:1)*(1.5+Math.random()*2)};
+    e.onpointerdown=ev=>{speak(c,"ms-MY");tone(450+i*70,.15);burst(ev.clientX,ev.clientY);o.vx*=1.25;o.vy*=1.25;if(Math.abs(o.vx)>9){o.vx/=2;o.vy/=2}};return o});
+  if(!looping){looping=true;tick()}
+}
+function tick(){
+  if(!$("splash").classList.contains("on")){looping=false;return}
+  const a=$("arena"),W=a.clientWidth,H=a.clientHeight;
+  tiles.forEach(o=>{o.x+=o.vx;o.y+=o.vy;if(o.x<0){o.x=0;o.vx=Math.abs(o.vx)}if(o.x>W-54){o.x=W-54;o.vx=-Math.abs(o.vx)}if(o.y<0){o.y=0;o.vy=Math.abs(o.vy)}if(o.y>H-54){o.y=H-54;o.vy=-Math.abs(o.vy)}o.e.style.transform=`translate(${o.x}px,${o.y}px)`});
+  requestAnimationFrame(tick)
+}
+launch("JOMMAIN");
+$("go").onclick=()=>launch($("nm").value.trim()||"JOMMAIN");
+$("nm").onkeydown=e=>{if(e.key==="Enter")$("go").onclick()};
+$("play").onclick=()=>{
+  const n=$("nm").value.trim();who=n;
+  document.querySelectorAll(".balloon").forEach(x=>x.remove());show("home");
+  $("hi").textContent=n?`Hai, ${n}! 👋`:"";speak(n?`Hai ${n}! Jom main!`:"Jom main!","ms-MY");
+};
+// ---------- Exit: save or clear results, back to landing page ----------
+function refreshSplash(){const v=$("nm").value.trim(),n=getAll().filter(x=>(x.p||"")===v.toLowerCase()).length,b=$("seeres");b.style.display=n?"block":"none";b.textContent=`📒 Lihat keputusan ${v||"tetamu"} (${n})`}
+function askExit(){const n=getH().length;$("xi").textContent=n?`${n} permainan tersimpan dalam pelayar ini. Simpan untuk dilihat semula nanti, atau padam sekarang.`:"Belum ada keputusan tersimpan.";$("xm").style.display="flex";speechSynthesis.cancel()}
+function exitTo(clear){
+  if(clear)setH([]);$("xm").style.display="none";sid++;cur=null;locked=true;
+  if(camOn){camOn=false;try{video.srcObject.getTracks().forEach(t=>t.stop())}catch(e){}video.srcObject=null;$("cambtn").style.display=""}
+  who="";$("nm").value="";$("hi").textContent="";show("splash");launch("JOMMAIN");refreshSplash();
+}
+document.querySelectorAll("[data-x]").forEach(b=>b.onclick=askExit);
+$("xs").onclick=()=>exitTo(false);$("xd").onclick=()=>exitTo(true);$("xc").onclick=()=>$("xm").style.display="none";
+$("seeres").onclick=()=>{who=$("nm").value.trim();$("hi").textContent=who?`Hai, ${who}! 👋`:"";report()};$("nm").oninput=refreshSplash;
+$("clr").addEventListener("click",()=>setTimeout(refreshSplash,0));
+refreshSplash();
 if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script>
 </body>
