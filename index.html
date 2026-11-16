@@ -399,6 +399,7 @@ $("seeres").onclick=()=>{who=$("nm").value.trim();$("hi").textContent=who?`Hai, 
 $("clr").addEventListener("click",()=>setTimeout(refreshSplash,0));
 refreshSplash();
 // ---------- Camera mode: full-screen camera, pinch to pick an item and drop it in the box ----------
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");
 let camMode=false;const cs={on:false,items:[],held:null,by:"",pinch:false,cx:0,cy:0,locked:true,busy:false};
 const goPlay=()=>camMode?startCam():start();
 const setMode=m=>{camMode=m;$("m1").classList.toggle("on",!m);$("m2").classList.toggle("on",m)};$("m1").onclick=()=>setMode(false);$("m2").onclick=()=>setMode(true);
@@ -428,7 +429,7 @@ function onCamHands(r){const cv=$("cfc"),c=cv.getContext("2d");if(cv.width!==inn
   if(!lm){cu.style.display="none";if(cs.pinch&&cs.held&&cs.by==="hand")release();cs.pinch=false;return}
   const vv=$("cfv"),vw=vv.videoWidth||640,vh=vv.videoHeight||480,W=innerWidth,H=innerHeight,sc=Math.max(W/vw,H/vh),ox=(vw*sc-W)/2,oy=(vh*sc-H)/2,P=lm.map(p=>({x:(1-p.x)*vw*sc-ox,y:p.y*vh*sc-oy}));
   c.fillStyle="#ffffffbb";P.forEach(p=>{c.beginPath();c.arc(p.x,p.y,4,0,7);c.fill()});
-  const hs=Math.hypot(lm[0].x-lm[9].x,lm[0].y-lm[9].y)||.1,d=Math.hypot(lm[4].x-lm[8].x,lm[4].y-lm[8].y)/hs,tx=(P[4].x+P[8].x)/2,ty=(P[4].y+P[8].y)/2;
+  const dd=(a,b)=>Math.hypot((a.x-b.x)*vw,(a.y-b.y)*vh),hs=dd(lm[0],lm[9])||1,d=dd(lm[4],lm[8])/hs,tx=(P[4].x+P[8].x)/2,ty=(P[4].y+P[8].y)/2;
   cs.cx=cs.cx?cs.cx+(tx-cs.cx)*.6:tx;cs.cy=cs.cy?cs.cy+(ty-cs.cy)*.6:ty;
   const pin=cs.pinch?d<.55:d<.38;cu.style.display="block";cu.style.left=cs.cx+"px";cu.style.top=cs.cy+"px";cu.classList.toggle("pinch",pin);
   if(pin&&!cs.pinch){const it=nearest(cs.cx,cs.cy);if(it)grab(it,cs.cx,cs.cy,"hand")}
