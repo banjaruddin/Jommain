@@ -57,6 +57,20 @@ table{border-collapse:collapse;width:100%;max-width:520px;background:#fff;border
 @keyframes cf{to{transform:translate(var(--x),var(--y)) rotate(360deg);opacity:0}}
 #nm{font:inherit;font-size:18px;padding:10px 14px;border:3px solid var(--b);border-radius:16px;width:62%;max-width:260px;text-align:center;user-select:text;-webkit-user-select:text}
 .credit{font-size:13px;line-height:1.4;opacity:.7}
+#cam{position:fixed;inset:0;background:#000;z-index:100;display:none;overflow:hidden;touch-action:none}
+#cfv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}#cfc{position:absolute;inset:0;pointer-events:none;z-index:3}
+.chud{position:absolute;top:calc(8px + env(safe-area-inset-top,0px));left:12px;right:12px;display:flex;justify-content:space-between;align-items:center;color:#fff;font-weight:700;font-size:20px;text-shadow:0 0 6px #000;z-index:7}
+.chud button{background:#0008;color:#fff;border:2px solid #fff;border-radius:50%;width:40px;height:40px;font-size:18px}
+.cpanel{position:absolute;top:calc(52px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:#fffe;color:#2b2d42;border-radius:20px;padding:6px 18px;text-align:center;z-index:5;min-width:56%;max-width:94%}
+.cbig{font-size:clamp(40px,13vw,74px);line-height:1.1;word-break:break-word}.cbig.s{font-size:clamp(28px,8vw,44px)}
+.citem{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fffe;border:4px solid #fff;border-radius:22px;color:#2b2d42;touch-action:none;z-index:6;transition:left .25s,top .25s;text-align:center;line-height:1.1}
+.citem.drag{transition:none;z-index:9;box-shadow:0 10px 24px #000a;transform:scale(1.08)}.citem.good{border-color:#51cf66;background:#d3f9d8}.citem.bad{border-color:#ff6b6b}
+.citem .ce{font-size:clamp(38px,12vw,62px)}.citem .cw{font-size:clamp(15px,4.4vw,22px);font-weight:700}
+#cbox{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(4% + env(safe-area-inset-bottom,0px));width:min(74vw,430px);height:21vh;border:5px dashed #fff;border-radius:26px;background:#ffffff33;z-index:4;display:flex;align-items:center;justify-content:center;color:#fff;font-size:clamp(20px,6vw,30px);font-weight:700;text-shadow:0 0 6px #000;text-align:center}
+#cbox.hot{background:#51cf6699;border-color:#51cf66}
+#ccur{position:absolute;width:46px;height:46px;margin:-23px 0 0 -23px;border:5px solid #fff;border-radius:50%;z-index:10;pointer-events:none;display:none}#ccur.pinch{background:#51cf66cc;border-color:#51cf66}
+#cfb{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-size:clamp(30px,9vw,58px);font-weight:900;color:#fff;text-shadow:0 0 12px #000,0 0 4px #000;text-align:center;z-index:12;pointer-events:none;padding:20px;white-space:pre-line}
+#chint{position:absolute;left:0;right:0;bottom:calc(4% + 21vh + 10px);text-align:center;color:#fff;font-weight:700;text-shadow:0 0 6px #000;z-index:5;padding:0 12px;font-size:15px}
 </style>
 </head>
 <body>
@@ -75,6 +89,7 @@ table{border-collapse:collapse;width:100%;max-width:520px;background:#fff;border
   <h1>🌈 Jom Main!</h1><div id="hi" style="font-size:20px;font-weight:700"></div>
   <div>Pilih tahap</div>
   <div class="lv" id="lv"></div>
+  <div class="lv" style="grid-template-columns:1fr 1fr;max-width:460px"><button class="chip on" id="m1">👆 Mod Sentuh</button><button class="chip" id="m2">📷 Mod Kamera</button></div>
   <div>Pilih subjek</div>
   <div class="menu">
     <button class="btn" style="background:var(--a)" data-s="bm"><span>🅰️</span>Bahasa Melayu</button>
@@ -111,6 +126,10 @@ table{border-collapse:collapse;width:100%;max-width:520px;background:#fff;border
 </section>
 
 <div id="xm" style="display:none;position:fixed;inset:0;background:#0007;z-index:200;align-items:center;justify-content:center;padding:20px"><div style="background:#fff;border-radius:24px;padding:20px;max-width:340px;width:100%;text-align:center;display:flex;flex-direction:column;gap:12px"><h2>🚪 Nak keluar?</h2><div id="xi" class="small" style="margin:0 auto"></div><button class="btn" id="xs" style="background:var(--c)">💾 Simpan &amp; keluar</button><button class="btn" id="xd" style="background:var(--a)">🗑️ Padam &amp; keluar</button><button class="link" id="xc">Batal</button></div></div>
+<div id="cam"><video id="cfv" playsinline muted autoplay></video><canvas id="cfc"></canvas>
+<div class="chud"><span id="cs">⭐ 0</span><span id="cr"></span><button id="cx">✖</button></div>
+<div class="cpanel" id="cq"></div><div id="citems"></div><div id="chint">🤏 Cubit ibu jari &amp; jari telunjuk pada gambar, bawa ke 📦, lepaskan</div>
+<div id="cbox">📦 Letak jawapan di sini</div><div id="ccur"></div><div id="cfb"></div></div>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.js" crossorigin="anonymous"></script>
 <script>
 "use strict";
@@ -202,10 +221,10 @@ const setH=h=>{try{localStorage.setItem(HK,JSON.stringify(getAll().filter(x=>(x.
 
 // level chips
 LVN.forEach((n,i)=>{const b=document.createElement("button");b.className="chip"+(i===0?" on":"");b.textContent=i===0?"Pra":"T"+i;b.title=n;b.onclick=()=>{lv=i;document.querySelectorAll(".chip").forEach((c,j)=>c.classList.toggle("on",j===i))};$("lv").appendChild(b)});
-document.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{sub=b.dataset.s;start()});
+document.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{sub=b.dataset.s;goPlay()});
 $("back").onclick=$("home2").onclick=$("home3").onclick=()=>{show("home");speechSynthesis.cancel()};
-$("again").onclick=()=>start();
-$("upg").onclick=()=>{lv=Math.min(6,lv+1);document.querySelectorAll(".chip").forEach((c,j)=>c.classList.toggle("on",j===lv));start()};
+$("again").onclick=()=>goPlay();
+$("upg").onclick=()=>{lv=Math.min(6,lv+1);document.querySelectorAll(".chip").forEach((c,j)=>c.classList.toggle("on",j===lv));goPlay()};
 $("rep").onclick=$("rep2").onclick=report;
 $("clr").onclick=()=>{if(confirm("Padam semua sejarah?")){setH([]);report()}};
 $("cambtn").onclick=startCamera;
@@ -369,7 +388,7 @@ $("play").onclick=()=>{
 // ---------- Exit: save or clear results, back to landing page ----------
 function refreshSplash(){const v=$("nm").value.trim(),n=getAll().filter(x=>(x.p||"")===v.toLowerCase()).length,b=$("seeres");b.style.display=n?"block":"none";b.textContent=`📒 Lihat keputusan ${v||"tetamu"} (${n})`}
 function askExit(){const n=getH().length;$("xi").textContent=n?`${n} permainan tersimpan dalam pelayar ini. Simpan untuk dilihat semula nanti, atau padam sekarang.`:"Belum ada keputusan tersimpan.";$("xm").style.display="flex";speechSynthesis.cancel()}
-function exitTo(clear){
+function exitTo(clear){stopCam();
   if(clear)setH([]);$("xm").style.display="none";sid++;cur=null;locked=true;
   if(camOn){camOn=false;try{video.srcObject.getTracks().forEach(t=>t.stop())}catch(e){}video.srcObject=null;$("cambtn").style.display=""}
   who="";$("nm").value="";$("hi").textContent="";show("splash");launch("JOMMAIN");refreshSplash();
@@ -379,6 +398,54 @@ $("xs").onclick=()=>exitTo(false);$("xd").onclick=()=>exitTo(true);$("xc").oncli
 $("seeres").onclick=()=>{who=$("nm").value.trim();$("hi").textContent=who?`Hai, ${who}! 👋`:"";report()};$("nm").oninput=refreshSplash;
 $("clr").addEventListener("click",()=>setTimeout(refreshSplash,0));
 refreshSplash();
+// ---------- Camera mode: full-screen camera, pinch to pick an item and drop it in the box ----------
+let camMode=false;const cs={on:false,items:[],held:null,by:"",pinch:false,cx:0,cy:0,locked:true,busy:false};
+const goPlay=()=>camMode?startCam():start();
+const setMode=m=>{camMode=m;$("m1").classList.toggle("on",!m);$("m2").classList.toggle("on",m)};$("m1").onclick=()=>setMode(false);$("m2").onclick=()=>setMode(true);
+function letterQ(){const en=sub==="en",list=en?VOC:BMW,[e,w]=R(list),L=w[0].toUpperCase(),wr=shuffle(list.filter(x=>x[1][0].toUpperCase()!==L)).slice(0,2),o=shuffle([[e,w],...wr]);
+  return{type:"choice",big:L,q:en?`${L} is for…?`:`${L} untuk…?`,say:en?`${L} is for?`:`${L} untuk apa?`,lang:en?"en-US":"ms-MY",opts:o.map(x=>x[0]+" "+x[1]),a:o.findIndex(x=>x[1]===w)}}
+const cnt2=q=>{const s=new Set([q.a]);while(s.size<3)s.add(ri(1,10));const o=shuffle([...s]);return{type:"choice",big:q.big,q:"Berapa banyak? Pilih nombor.",say:"Berapa banyak?",lang:q.lang,opts:o.map(String),a:o.indexOf(q.a)}};
+function camQ(){const rec=recent[sub+lv]||new Set();
+  for(let L=lv;L>=0;L--)for(let i=0;i<60;i++){let q=(L===0&&(sub==="bm"||sub==="en")&&Math.random()<.85)?letterQ():GEN[sub][L]();if(q.type==="count")q=cnt2(q);if(q.type!=="choice")continue;const s=sig(q);if(!asked.has(s)&&(i>=40||!rec.has(s))){asked.add(s);return q}}
+  return(sub==="bm"||sub==="en")?letterQ():cnt2(CNT(ri(1,5)))}
+const ecard=o=>{const m=/^(\p{Extended_Pictographic}\uFE0F?(?:\u200D\p{Extended_Pictographic}\uFE0F?)*)\s*(.*)$/u.exec(o);return m?`<span class="ce">${m[1]}</span>${m[2]?`<span class="cw">${esc(m[2])}</span>`:""}`:`<span class="cw" style="font-size:clamp(24px,8vw,44px)">${esc(o)}</span>`};
+function layoutC(){const W=innerWidth,H=innerHeight,w=Math.min(W*.29,150),h=w*1.2,y=Math.max(H*.36,210);cs.items.forEach((it,i)=>{it.w=w;it.h=h;it.hx=(i+.5)*W/3-w/2;it.hy=y;if(it!==cs.held){it.el.style.width=w+"px";it.el.style.height=h+"px";it.el.style.left=it.hx+"px";it.el.style.top=it.hy+"px"}})}
+function buildC(){const box=$("citems");box.innerHTML="";cs.items=[];cur.opts.forEach((o,i)=>{const el=document.createElement("div");el.className="citem";el.innerHTML=ecard(o);const it={el,i};el.onpointerdown=e=>{e.preventDefault();grab(it,e.clientX,e.clientY,"ptr")};box.appendChild(el);cs.items.push(it)});layoutC()}
+function nextC(){if(round>=rounds()){stopCam();return finish()}round++;cs.locked=false;cs.held=null;cur=camQ();$("cs").textContent=`⭐ ${score}`;$("cr").textContent=`${round}/${rounds()} · ${lv?"T"+lv:"Pra"}`;
+  $("cq").innerHTML=`<div class="cbig${cur.big.length>8?" s":""}">${esc(cur.big)}</div><div style="font-size:clamp(17px,5vw,25px);font-weight:700">${esc(cur.q)}</div>`;$("cfb").style.display="none";$("cbox").classList.remove("hot");buildC();speak(cur.say,cur.lang)}
+const boxHit=(x,y)=>{const r=$("cbox").getBoundingClientRect();return x>r.left-10&&x<r.right+10&&y>r.top-10&&y<r.bottom+10};
+function grab(it,x,y,by){if(cs.locked||cs.held)return;cs.held=it;cs.by=by;it.el.classList.add("drag");moveHeld(x,y)}
+function moveHeld(x,y){const it=cs.held;if(!it)return;it.el.style.left=x-it.w/2+"px";it.el.style.top=y-it.h/2+"px";$("cbox").classList.toggle("hot",boxHit(x,y))}
+function release(){const it=cs.held;if(!it)return;cs.held=null;it.el.classList.remove("drag");$("cbox").classList.remove("hot");const b=it.el.getBoundingClientRect();if(boxHit(b.left+b.width/2,b.top+b.height/2))answerC(it);else{it.el.style.left=it.hx+"px";it.el.style.top=it.hy+"px"}}
+function answerC(it){cs.locked=true;const ok=it.i===cur.a,r=$("cbox").getBoundingClientRect(),s=sid;
+  it.el.style.left=r.left+r.width/2-it.w/2+"px";it.el.style.top=r.top+r.height/2-it.h/2+"px";it.el.classList.add(ok?"good":"bad");
+  if(ok)score++;else cs.items[cur.a].el.classList.add("good");$("cs").textContent=`⭐ ${score}`;
+  const f=$("cfb");f.textContent=ok?"✅ Betul! 🎉":"❌ Cuba lagi nanti!\nJawapan: "+cur.opts[cur.a];f.style.display="flex";beep(ok);if(ok)burst(r.left+r.width/2,r.top+r.height/2);speak(ok?"Betul! Bagus!":"Cuba lagi nanti","ms-MY");
+  setTimeout(()=>{if(s===sid&&cs.on)nextC()},ok?1900:2800)}
+const nearest=(x,y)=>{let b=null,bd=1e9;cs.items.forEach(it=>{const cx=parseFloat(it.el.style.left)+it.w/2,cy=parseFloat(it.el.style.top)+it.h/2,d=Math.hypot(cx-x,cy-y);if(d<Math.max(it.w,it.h)*.9&&d<bd){bd=d;b=it}});return b};
+function onCamHands(r){const cv=$("cfc"),c=cv.getContext("2d");if(cv.width!==innerWidth||cv.height!==innerHeight){cv.width=innerWidth;cv.height=innerHeight}c.clearRect(0,0,cv.width,cv.height);
+  const lm=r.multiHandLandmarks&&r.multiHandLandmarks[0],cu=$("ccur");
+  if(!lm){cu.style.display="none";if(cs.pinch&&cs.held&&cs.by==="hand")release();cs.pinch=false;return}
+  const vv=$("cfv"),vw=vv.videoWidth||640,vh=vv.videoHeight||480,W=innerWidth,H=innerHeight,sc=Math.max(W/vw,H/vh),ox=(vw*sc-W)/2,oy=(vh*sc-H)/2,P=lm.map(p=>({x:(1-p.x)*vw*sc-ox,y:p.y*vh*sc-oy}));
+  c.fillStyle="#ffffffbb";P.forEach(p=>{c.beginPath();c.arc(p.x,p.y,4,0,7);c.fill()});
+  const hs=Math.hypot(lm[0].x-lm[9].x,lm[0].y-lm[9].y)||.1,d=Math.hypot(lm[4].x-lm[8].x,lm[4].y-lm[8].y)/hs,tx=(P[4].x+P[8].x)/2,ty=(P[4].y+P[8].y)/2;
+  cs.cx=cs.cx?cs.cx+(tx-cs.cx)*.6:tx;cs.cy=cs.cy?cs.cy+(ty-cs.cy)*.6:ty;
+  const pin=cs.pinch?d<.55:d<.38;cu.style.display="block";cu.style.left=cs.cx+"px";cu.style.top=cs.cy+"px";cu.classList.toggle("pinch",pin);
+  if(pin&&!cs.pinch){const it=nearest(cs.cx,cs.cy);if(it)grab(it,cs.cx,cs.cy,"hand")}
+  if(pin&&cs.held&&cs.by==="hand")moveHeld(cs.cx,cs.cy);
+  if(!pin&&cs.pinch&&cs.held&&cs.by==="hand")release();
+  cs.pinch=pin}
+async function camLoop(){const v=$("cfv");if(!cs.on)return;if(!cs.busy&&v.readyState>=2){cs.busy=true;try{await hands.send({image:v})}catch(e){}cs.busy=false}requestAnimationFrame(camLoop)}
+async function startCam(){
+  if(camOn){camOn=false;try{video.srcObject.getTracks().forEach(t=>t.stop())}catch(e){}video.srcObject=null;$("cambtn").style.display=""}
+  if(!navigator.mediaDevices||!window.Hands){alert("Kamera tidak tersedia. Guna Mod Sentuh.");return}
+  const v=$("cfv");try{v.srcObject=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:{ideal:1280},height:{ideal:720}},audio:false});await v.play()}catch(e){alert("Sila benarkan kamera, atau guna Mod Sentuh.");return}
+  hands=hands||new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/${f}`});
+  hands.setOptions({maxNumHands:1,modelComplexity:0,minDetectionConfidence:.6,minTrackingConfidence:.5});hands.onResults(onCamHands);
+  sid++;asked=new Set();round=0;score=0;cs.on=true;cs.pinch=false;cs.held=null;cs.cx=0;cs.cy=0;show("x");$("cam").style.display="block";camLoop();nextC()}
+function stopCam(){cs.on=false;cs.held=null;try{$("cfv").srcObject.getTracks().forEach(t=>t.stop())}catch(e){}$("cfv").srcObject=null;$("cam").style.display="none";$("ccur").style.display="none"}
+$("cx").onclick=()=>{sid++;stopCam();speechSynthesis.cancel();show("home")};
+addEventListener("pointermove",e=>{if(cs.held&&cs.by==="ptr")moveHeld(e.clientX,e.clientY)});addEventListener("pointerup",()=>{if(cs.held&&cs.by==="ptr")release()});addEventListener("resize",()=>{if(cs.on)layoutC()});
 if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 </script>
 </body>
